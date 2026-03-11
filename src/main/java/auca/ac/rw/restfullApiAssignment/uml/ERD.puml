@@ -1,0 +1,213 @@
+@startuml ERD_CourseRegistrationSystem
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define primary_key(x) <b><u>x</u></b>
+!define foreign_key(x) <i>x</i>
+!define unique(x) <color:green>x</color>
+
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<Table>> LightYellow
+    BorderColor Black
+    ArrowColor Black
+}
+
+' ==================== ENTITIES ====================
+
+entity "students" as students {
+  primary_key(student_id) : VARCHAR(20)
+  --
+  name : VARCHAR NOT NULL
+  unique(email) : VARCHAR NOT NULL
+  phone : VARCHAR
+  address : TEXT
+  foreign_key(location_id) : UUID
+  max_credits : INTEGER DEFAULT 18
+  min_credits : INTEGER DEFAULT 12
+  created_at : TIMESTAMP
+}
+
+entity "instructors" as instructors {
+  primary_key(instructor_id) : VARCHAR(20)
+  --
+  name : VARCHAR NOT NULL
+  unique(email) : VARCHAR NOT NULL
+  phone : VARCHAR(15)
+  foreign_key(department_id) : VARCHAR(20)
+  specialization : VARCHAR
+  office_hours : VARCHAR
+  created_at : TIMESTAMP
+}
+
+entity "courses" as courses {
+  primary_key(course_code) : VARCHAR(20)
+  --
+  title : VARCHAR NOT NULL
+  credits : INTEGER NOT NULL
+  capacity : INTEGER NOT NULL
+  enrolled_count : INTEGER DEFAULT 0
+  foreign_key(instructor_id) : VARCHAR(20)
+  schedule_time : VARCHAR
+  schedule_days : VARCHAR
+  location : VARCHAR
+  foreign_key(department_id) : VARCHAR(20)
+  semester_id : VARCHAR
+  description : TEXT
+  fee : DECIMAL
+  is_active : BOOLEAN DEFAULT TRUE
+  created_at : TIMESTAMP
+}
+
+entity "departments" as departments {
+  primary_key(dept_id) : VARCHAR(20)
+  --
+  dept_name : VARCHAR NOT NULL
+  office_location : VARCHAR
+}
+
+entity "locations" as locations {
+  primary_key(id) : UUID
+  --
+  unique(code) : VARCHAR NOT NULL
+  name : VARCHAR NOT NULL
+  type : ENUM(COUNTRY, PROVINCE, DISTRICT, SECTOR, CELL, VILLAGE) NOT NULL
+  foreign_key(parent_id) : UUID
+}
+
+entity "users" as users {
+  primary_key(user_id) : VARCHAR(20)
+  --
+  unique(username) : VARCHAR NOT NULL
+  password : VARCHAR NOT NULL
+  unique(email) : VARCHAR NOT NULL
+  role : ENUM(STUDENT, INSTRUCTOR, ADMIN) NOT NULL
+  foreign_key(student_id) : VARCHAR(20)
+  foreign_key(instructor_id) : VARCHAR(20)
+  is_active : BOOLEAN DEFAULT TRUE
+  last_login : TIMESTAMP
+  created_at : TIMESTAMP
+}
+
+entity "registrations" as registrations {
+  primary_key(registration_id) : INTEGER AUTO_INCREMENT
+  --
+  foreign_key(student_id) : VARCHAR(20) NOT NULL
+  foreign_key(course_code) : VARCHAR(20) NOT NULL
+  registration_date : DATE NOT NULL
+  status : ENUM(PENDING, APPROVED, REJECTED, COMPLETED, DROPPED) DEFAULT PENDING
+  grade : VARCHAR
+  approval_required : BOOLEAN DEFAULT FALSE
+  approved_by : VARCHAR
+  approval_date : DATE
+  created_at : TIMESTAMP
+}
+
+entity "payments" as payments {
+  primary_key(payment_id) : INTEGER AUTO_INCREMENT
+  --
+  foreign_key(student_id) : VARCHAR(20) NOT NULL
+  amount : DECIMAL NOT NULL
+  payment_type : ENUM(TUITION, REGISTRATION, LIBRARY, OTHER) DEFAULT TUITION
+  payment_method : ENUM(CASH, CARD, MOBILE_MONEY, BANK_TRANSFER) NOT NULL
+  transaction_id : VARCHAR
+  payment_date : TIMESTAMP DEFAULT NOW
+  status : ENUM(PENDING, COMPLETED, FAILED, REFUNDED) DEFAULT PENDING
+  receipt_number : VARCHAR
+  semester_id : VARCHAR
+}
+
+entity "waitlist" as waitlist {
+  primary_key(waitlist_id) : INTEGER AUTO_INCREMENT
+  --
+  foreign_key(student_id) : VARCHAR(20) NOT NULL
+  foreign_key(course_code) : VARCHAR(20) NOT NULL
+  position : INTEGER NOT NULL
+  waitlist_date : TIMESTAMP DEFAULT NOW
+  notified : BOOLEAN DEFAULT FALSE
+}
+
+entity "course_prerequisites" as course_prerequisites {
+  foreign_key(course_code) : VARCHAR(20)
+  foreign_key(prerequisite_code) : VARCHAR(20)
+  --
+  PRIMARY KEY (course_code, prerequisite_code)
+}
+
+' ==================== RELATIONSHIPS ====================
+
+' One-to-Many: Location -> Students
+locations ||--o{ students : "has many"
+
+' Self-referencing: Location -> Location (Hierarchical)
+locations ||--o{ locations : "parent of"
+
+' One-to-Many: Department -> Instructors
+departments ||--o{ instructors : "has many"
+
+' One-to-Many: Department -> Courses
+departments ||--o{ courses : "offers"
+
+' One-to-Many: Instructor -> Courses
+instructors ||--o{ courses : "teaches"
+
+' One-to-One: User -> Student
+users ||--|| students : "authenticates"
+
+' One-to-One: User -> Instructor
+users ||--|| instructors : "authenticates"
+
+' One-to-Many: Student -> Registrations
+students ||--o{ registrations : "enrolls in"
+
+' One-to-Many: Course -> Registrations
+courses ||--o{ registrations : "has"
+
+' One-to-Many: Student -> Payments
+students ||--o{ payments : "makes"
+
+' One-to-Many: Student -> Waitlist
+students ||--o{ waitlist : "waits in"
+
+' One-to-Many: Course -> Waitlist
+courses ||--o{ waitlist : "has"
+
+' Many-to-Many: Course -> Course (Prerequisites)
+courses }o--o{ course_prerequisites : "requires"
+course_prerequisites }o--o{ courses : "prerequisite for"
+
+note right of locations
+  **Hierarchical Structure:**
+  COUNTRY -> PROVINCE -> DISTRICT 
+  -> SECTOR -> CELL -> VILLAGE
+  
+  Self-referencing relationship
+  allows nested locations
+end note
+
+note right of users
+  **One-to-One Relationships:**
+  - User can be linked to Student OR Instructor
+  - Not both simultaneously
+  - Role field determines the type
+end note
+
+note bottom of course_prerequisites
+  **Many-to-Many Join Table:**
+  Represents prerequisite relationships
+  between courses. A course can have
+  multiple prerequisites and can be
+  a prerequisite for multiple courses.
+end note
+
+note bottom of registrations
+  **Bridge Entity:**
+  Connects Students and Courses
+  Tracks enrollment status and grades
+end note
+
+note bottom of waitlist
+  **Queue Management:**
+  Manages waiting list when
+  courses reach capacity
+end note
+
+@enduml
