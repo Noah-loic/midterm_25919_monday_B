@@ -376,6 +376,7 @@ curl "http://localhost:8081/api/students/paginated?page=0&size=10&sortBy=name&di
 
 ---
 
+![alt text](image.png)
 
 
 
