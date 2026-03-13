@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import auca.ac.rw.restfullApiAssignment.modal.CourseEntity;
+import auca.ac.rw.restfullApiAssignment.modal.StudentEntity;
 import auca.ac.rw.restfullApiAssignment.service.CourseService;
 import java.util.List;
 
@@ -83,5 +84,10 @@ public class CourseController {
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CourseEntity>> searchCoursesByTitle(@RequestParam String name) {
         return new ResponseEntity<>(courseService.searchByTitle(name), HttpStatus.OK);
+    }
+    
+    @GetMapping(value = "/{courseCode}/students", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<StudentEntity>> getStudentsByCourse(@PathVariable String courseCode) {
+        return new ResponseEntity<>(courseService.getStudentsByCourse(courseCode), HttpStatus.OK);
     }
 }

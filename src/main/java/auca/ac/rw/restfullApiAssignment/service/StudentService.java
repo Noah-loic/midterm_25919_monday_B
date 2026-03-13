@@ -5,9 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import auca.ac.rw.restfullApiAssignment.modal.StudentEntity;
+import auca.ac.rw.restfullApiAssignment.modal.CourseEntity;
+import auca.ac.rw.restfullApiAssignment.modal.Registration;
 import auca.ac.rw.restfullApiAssignment.modal.Location;
 import auca.ac.rw.restfullApiAssignment.repository.StudentRepository;
 import auca.ac.rw.restfullApiAssignment.repository.LocationRepository;
+import auca.ac.rw.restfullApiAssignment.repository.RegistrationRepository;
 import java.util.List;
 
 @Service
@@ -18,6 +21,9 @@ public class StudentService {
     
     @Autowired
     private LocationRepository locationRepository;
+    
+    @Autowired
+    private RegistrationRepository registrationRepository;
     
     public String saveStudent(StudentEntity student) {
         if (studentRepository.existsById(student.getStudentId())) {
@@ -83,5 +89,14 @@ public class StudentService {
     
     public List<StudentEntity> searchByName(String name) {
         return studentRepository.findByNameContainingIgnoreCase(name);
+    }
+    
+    public List<CourseEntity> getCoursesByStudent(String studentId) {
+        StudentEntity student = studentRepository.findById(studentId).orElse(null);
+        if (student == null) return List.of();
+        return registrationRepository.findByStudent(student)
+            .stream()
+            .map(Registration::getCourse)
+            .toList();
     }
 }

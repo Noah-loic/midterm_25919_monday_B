@@ -1,7 +1,9 @@
 package auca.ac.rw.restfullApiAssignment.service;
 
 import auca.ac.rw.restfullApiAssignment.modal.Instructor;
+import auca.ac.rw.restfullApiAssignment.modal.CourseEntity;
 import auca.ac.rw.restfullApiAssignment.repository.InstructorRepository;
+import auca.ac.rw.restfullApiAssignment.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -11,6 +13,9 @@ public class InstructorService {
     
     @Autowired
     private InstructorRepository instructorRepository;
+    
+    @Autowired
+    private CourseRepository courseRepository;
 
     public String save(Instructor instructor) {
         if (instructorRepository.existsById(instructor.getInstructorId())) {
@@ -47,5 +52,9 @@ public class InstructorService {
     
     public List<Instructor> searchByName(String name) {
         return instructorRepository.findByNameContainingIgnoreCase(name);
+    }
+    
+    public List<CourseEntity> getCoursesByInstructor(String instructorId) {
+        return courseRepository.findByInstructorInstructorId(instructorId);
     }
 }

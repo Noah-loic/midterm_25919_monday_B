@@ -1,6 +1,7 @@
 package auca.ac.rw.restfullApiAssignment.controller;
 
 import auca.ac.rw.restfullApiAssignment.modal.Instructor;
+import auca.ac.rw.restfullApiAssignment.modal.CourseEntity;
 import auca.ac.rw.restfullApiAssignment.service.InstructorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,5 +44,10 @@ public class InstructorController {
     @GetMapping("/search")
     public ResponseEntity<List<Instructor>> searchByName(@RequestParam String name) {
         return ResponseEntity.ok(instructorService.searchByName(name));
+    }
+    
+    @GetMapping("/{instructorId}/courses")
+    public ResponseEntity<List<CourseEntity>> getCoursesByInstructor(@PathVariable String instructorId) {
+        return ResponseEntity.ok(instructorService.getCoursesByInstructor(instructorId));
     }
 }

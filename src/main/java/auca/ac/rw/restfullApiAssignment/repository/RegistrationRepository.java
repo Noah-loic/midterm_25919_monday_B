@@ -13,4 +13,5 @@ public interface RegistrationRepository extends JpaRepository<Registration, Inte
     List<Registration> findByStatus(ERegistrationStatus status);
     Optional<Registration> findByStudentAndCourse(StudentEntity student, CourseEntity course);
     Boolean existsByStudentAndCourse(StudentEntity student, CourseEntity course);
+    List<Registration> findByCourseCourseCode(String courseCode);
 }
