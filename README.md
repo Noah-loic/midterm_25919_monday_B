@@ -178,6 +178,17 @@ The application will start on `http://localhost:8081`
 #### 9. Get Students by Location Code
 - **GET** `/api/students/location/code/{code}`
 
+#### 10. Search Students by Name
+- **GET** `/api/students/search?name={searchTerm}`
+- **Query Parameters:**
+  - `name` - Name to search (case-insensitive, partial match)
+- **Example:** `/api/students/search?name=John`
+
+#### 11. Get Courses for a Student
+- **GET** `/api/students/{studentId}/courses`
+- **Returns:** List of all courses the student is registered for
+- **Example:** `/api/students/STU001/courses`
+
 ### Course Management
 
 #### 1. Create Course
