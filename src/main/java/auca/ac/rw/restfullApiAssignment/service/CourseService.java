@@ -58,4 +58,8 @@ public class CourseService {
         courseRepository.deleteById(courseCode);
         return "Course deleted successfully";
     }
+    
+    public List<CourseEntity> searchByTitle(String title) {
+        return courseRepository.findByTitleContainingIgnoreCase(title);
+    }
 }

@@ -39,4 +39,9 @@ public class InstructorController {
     public ResponseEntity<String> delete(@PathVariable String id) {
         return ResponseEntity.ok(instructorService.delete(id));
     }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<Instructor>> searchByName(@RequestParam String name) {
+        return ResponseEntity.ok(instructorService.searchByName(name));
+    }
 }

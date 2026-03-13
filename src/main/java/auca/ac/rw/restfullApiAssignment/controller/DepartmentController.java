@@ -50,4 +50,9 @@ public class DepartmentController {
             ? new ResponseEntity<>(result, HttpStatus.OK)
             : new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
     }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<Department>> searchByName(@RequestParam String name) {
+        return new ResponseEntity<>(departmentService.searchByName(name), HttpStatus.OK);
+    }
 }

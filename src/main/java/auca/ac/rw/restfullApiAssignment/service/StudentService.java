@@ -80,4 +80,8 @@ public class StudentService {
     public List<StudentEntity> getStudentsByLocationCode(String locationCode) {
         return studentRepository.findByLocationCode(locationCode);
     }
+    
+    public List<StudentEntity> searchByName(String name) {
+        return studentRepository.findByNameContainingIgnoreCase(name);
+    }
 }

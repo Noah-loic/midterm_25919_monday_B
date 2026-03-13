@@ -79,4 +79,9 @@ public class CourseController {
         }
         return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
     }
+    
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CourseEntity>> searchCoursesByTitle(@RequestParam String name) {
+        return new ResponseEntity<>(courseService.searchByTitle(name), HttpStatus.OK);
+    }
 }

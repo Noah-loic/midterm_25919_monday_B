@@ -44,4 +44,8 @@ public class InstructorService {
         instructorRepository.deleteById(id);
         return "Instructor deleted successfully";
     }
+    
+    public List<Instructor> searchByName(String name) {
+        return instructorRepository.findByNameContainingIgnoreCase(name);
+    }
 }

@@ -84,4 +84,9 @@ public class StudentController {
     public ResponseEntity<List<StudentEntity>> getStudentsByLocationCode(@PathVariable String code) {
         return new ResponseEntity<>(studentService.getStudentsByLocationCode(code), HttpStatus.OK);
     }
+    
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<StudentEntity>> searchStudentsByName(@RequestParam String name) {
+        return new ResponseEntity<>(studentService.searchByName(name), HttpStatus.OK);
+    }
 }

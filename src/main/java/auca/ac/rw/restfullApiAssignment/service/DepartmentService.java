@@ -48,4 +48,8 @@ public class DepartmentService {
             return "Cannot delete department: It has associated instructors";
         }
     }
+    
+    public List<Department> searchByName(String name) {
+        return departmentRepository.findByDeptNameContainingIgnoreCase(name);
+    }
 }
